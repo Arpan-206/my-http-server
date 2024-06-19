@@ -20,12 +20,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	conn, err := l.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			os.Exit(1)
+		}
+
+		go handleConn(conn)
 	}
 
+}
+
+func handleConn(conn net.Conn) {
 	req := make([]byte, 1024)
 	conn.Read(req)
 	match, _ := regexp.MatchString("GET / HTTP/1.1", string(req))
