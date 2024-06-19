@@ -66,7 +66,7 @@ func handleConn(conn net.Conn) {
 		dir := os.Args[2]
 		data := strings.Split(string(req), "\r\n\r\n")[1]
 
-		err := os.WriteFile(dir+path, []byte(data), 0644)
+		err := os.WriteFile(dir+path, []byte(data), 0666)
 		if err != nil {
 			conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
 		} else {
