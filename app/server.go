@@ -5,7 +5,7 @@ import (
 	// Uncomment this block to pass the first stage
 	"net"
 	"os"
-	"strings"
+	"regexp"
 )
 
 func main() {
@@ -26,8 +26,16 @@ func main() {
 
 	req := make([]byte, 1024)
 	conn.Read(req)
-	if strings.HasPrefix(string(req), "GET / HTTP/1.1") {
-		conn.Write([]byte("HTTP/1.1 200 OK\r\n\r\n"))
+	match, _ := regexp.MatchString("GET / HTTP/1.1", string(req))
+	match2, _ := regexp.MatchString("^GET /echo/[A-Za-z0-9\\-._~%]+ HTTP/1\\.1", string(req))
+	fmt.Println(string(req))
+	if match {
+		conn.Write([]byte("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n"))
+	} else if match2 {
+		// Get the path from the request
+		path := regexp.MustCompile("^GET /echo/([A-Za-z0-9\\-._~%]+) HTTP/1\\.1").FindStringSubmatch(string(req))[1]
+		fmt.Println(path)
+		conn.Write([]byte("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + fmt.Sprintf("%v", len(path)) + "\r\n\r\n" + path))
 	} else {
 		conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
 	}
