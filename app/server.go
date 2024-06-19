@@ -66,7 +66,7 @@ func handleConn(conn net.Conn) {
 		dir := os.Args[2]
 		body := regexp.MustCompile("\r\n\r\n(.*)").FindStringSubmatch(string(req))[1]
 		data := body
-		data = strings.Trim(data, "\r\n")
+		data = strings.Trim(data, "\x00")
 		err := os.WriteFile(dir+path, []byte(data), 0666)
 		if err != nil {
 			conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
