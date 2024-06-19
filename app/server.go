@@ -64,7 +64,8 @@ func handleConn(conn net.Conn) {
 	} else if match5 {
 		path := regexp.MustCompile("^POST /files/([A-Za-z0-9\\-._~%]+) HTTP/1\\.1").FindStringSubmatch(string(req))[1]
 		dir := os.Args[2]
-		data := strings.Split(string(req), "\r\n\r\n")[1]
+		body := regexp.MustCompile("\r\n\r\n(.*)").FindStringSubmatch(string(req))[1]
+		data := body
 		data = strings.Trim(data, "\r\n")
 		err := os.WriteFile(dir+path, []byte(data), 0666)
 		if err != nil {
