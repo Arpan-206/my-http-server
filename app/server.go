@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	// Uncomment this block to pass the first stage
 	"net"
@@ -36,10 +37,12 @@ func main() {
 	} else if match2 {
 		// Get the path from the request
 		path := regexp.MustCompile("^GET /echo/([A-Za-z0-9\\-._~%]+) HTTP/1\\.1").FindStringSubmatch(string(req))[1]
+		fmt.Println(path)
 		conn.Write([]byte("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + fmt.Sprintf("%v", len(path)) + "\r\n\r\n" + path))
 	} else if match3 {
 		user_agent := regexp.MustCompile("User-Agent: (.*)").FindStringSubmatch(string(req))[1]
-		conn.Write([]byte("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + fmt.Sprintf("%v", len(user_agent)+1) + "\r\n\r\n" + user_agent))
+		user_agent = strings.Trim(user_agent, "\r\n")
+		conn.Write([]byte("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + fmt.Sprintf("%v", len(user_agent)) + "\r\n\r\n" + user_agent))
 	} else {
 		conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
 	}
