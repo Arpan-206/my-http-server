@@ -58,7 +58,7 @@ func handleConn(conn net.Conn) {
 		if err != nil {
 			conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
 		} else {
-			conn.Write([]byte("HTTP/1.1 200 OK\r\nContent-Type: text/octet-stream\r\nContent-Length: " + fmt.Sprintf("%v", len(data)) + "\r\n\r\n" + string(data)))
+			conn.Write([]byte("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: " + fmt.Sprintf("%v", len(data)) + "\r\n\r\n" + string(data)))
 		}
 	} else {
 		conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
