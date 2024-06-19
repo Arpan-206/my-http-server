@@ -39,6 +39,7 @@ func handleConn(conn net.Conn) {
 	match2, _ := regexp.MatchString("^GET /echo/[A-Za-z0-9\\-._~%]+ HTTP/1\\.1", string(req))
 	match3, _ := regexp.MatchString("^GET /user-agent HTTP/1\\.1", string(req))
 	match4, _ := regexp.MatchString("^GET /files/[A-Za-z0-9\\-._~%]+ HTTP/1\\.1", string(req))
+	match5, _ := regexp.MatchString("^POST /files/[A-Za-z0-9\\-._~%]+ HTTP/1\\.1", string(req))
 	fmt.Println(string(req))
 	if match {
 		conn.Write([]byte("HTTP/1.1 200 OK\r\n\r\n"))
@@ -59,6 +60,17 @@ func handleConn(conn net.Conn) {
 			conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
 		} else {
 			conn.Write([]byte("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: " + fmt.Sprintf("%v", len(data)) + "\r\n\r\n" + string(data)))
+		}
+	} else if match5 {
+		path := regexp.MustCompile("^POST /files/([A-Za-z0-9\\-._~%]+) HTTP/1\\.1").FindStringSubmatch(string(req))[1]
+		dir := os.Args[2]
+		data := strings.Split(string(req), "\r\n\r\n")[1]
+
+		err := os.WriteFile(dir+path, []byte(data), 0644)
+		if err != nil {
+			conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
+		} else {
+			conn.Write([]byte("HTTP/1.1 201 Created\r\n\r\n"))
 		}
 	} else {
 		conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
