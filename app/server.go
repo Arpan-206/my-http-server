@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	// Uncomment this block to pass the first stage
 	"net"
 	"os"
 	"regexp"
 )
 
 func main() {
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
 	fmt.Println("Logs from your program will appear here!")
 
 	l, err := net.Listen("tcp", "0.0.0.0:4221")
@@ -26,13 +24,13 @@ func main() {
 			fmt.Println("Error accepting connection: ", err.Error())
 			os.Exit(1)
 		}
-
 		go handleConn(conn)
 	}
 
 }
 
 func handleConn(conn net.Conn) {
+	defer conn.Close()
 	req := make([]byte, 1024)
 	conn.Read(req)
 	match, _ := regexp.MatchString("GET / HTTP/1.1", string(req))
